@@ -6,7 +6,7 @@ export interface NoteToolDependencies {
   service: INoteService;
 }
 
-export const createNoteTool = (deps: NoteToolDependencies) => {
+export const createNoteTools = (deps: NoteToolDependencies) => {
   const addNoteTool = createTool({
     name: "addNote",
     description: "Use this tool to add a new note",
