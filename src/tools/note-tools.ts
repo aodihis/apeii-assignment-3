@@ -6,24 +6,64 @@ export interface NoteToolDependencies {
   service: INoteService;
 }
 
+const formatNote = (note: Awaited<ReturnType<INoteService["getNote"]>>) =>
+  note ? `Note ID: ${note.id}\nNote: ${note.note}` : "There are no notes saved.";
+
+const formatNotes = (notes: Awaited<ReturnType<INoteService["getNotes"]>>) =>
+  notes.length
+    ? notes.map((note) => formatNote(note)).join("\n\n")
+    : "There are no notes saved.";
+
+const formatError = (error: unknown) => {
+  if (error instanceof Error && error.message === "Note not found.") {
+    return "There are no notes saved.";
+  }
+
+  return `Error: ${error instanceof Error ? error.message : "Unable to complete the note operation."}`;
+};
+
 export const createNoteTools = (deps: NoteToolDependencies) => {
   const addNoteTool = createTool({
     name: "addNote",
     description: "Use this tool to add a new note",
     inputSchema: z.object({
-      note: z.string(),
+      note: z.string().trim().min(1),
     }),
-    execute: ({ note }) => deps.service.createNote(note),
+    execute: async ({ note }) => {
+      try {
+        return formatNote(await deps.service.createNote(note));
+      } catch (error) {
+        return formatError(error);
+      }
+    },
   });
 
   const readNoteTool = createTool({
     name: "readNote",
-    description: "Use this tool to read one note or all notes",
+    description: "Use this tool to read one note by its note ID. Returns the note ID and text.",
     inputSchema: z.object({
-      noteId: z.string().optional(),
+      noteId: z.string().trim().min(1),
     }),
-    execute: ({ noteId }) =>
-      noteId ? deps.service.getNote(noteId) : deps.service.getNotes(),
+    execute: async ({ noteId }) => {
+      try {
+        return formatNote(await deps.service.getNote(noteId));
+      } catch (error) {
+        return formatError(error);
+      }
+    },
+  });
+
+  const readNotesTool = createTool({
+    name: "readNotes",
+    description: "Use this tool to read all saved notes. Returns each note's ID and text.",
+    inputSchema: z.object({}),
+    execute: async () => {
+      try {
+        return formatNotes(await deps.service.getNotes());
+      } catch (error) {
+        return formatError(error);
+      }
+    },
   });
 
   const updateNoteTool = createTool({
@@ -31,9 +71,15 @@ export const createNoteTools = (deps: NoteToolDependencies) => {
     description: "Use this tool to update an existing note",
     inputSchema: z.object({
       noteId: z.string(),
-      note: z.string(),
+      note: z.string().trim().min(1),
     }),
-    execute: ({ noteId, note }) => deps.service.updateNote(noteId, note),
+    execute: async ({ noteId, note }) => {
+      try {
+        return formatNote(await deps.service.updateNote(noteId, note));
+      } catch (error) {
+        return formatError(error);
+      }
+    },
   });
 
   const deleteNoteTool = createTool({
@@ -42,8 +88,14 @@ export const createNoteTools = (deps: NoteToolDependencies) => {
     inputSchema: z.object({
       noteId: z.string(),
     }),
-    execute: ({ noteId }) => deps.service.deleteNote(noteId),
+    execute: async ({ noteId }) => {
+      try {
+        return formatNote(await deps.service.deleteNote(noteId));
+      } catch (error) {
+        return formatError(error);
+      }
+    },
   });
 
-  return [addNoteTool, readNoteTool, updateNoteTool, deleteNoteTool];
+  return [addNoteTool, readNoteTool, readNotesTool, updateNoteTool, deleteNoteTool];
 };
