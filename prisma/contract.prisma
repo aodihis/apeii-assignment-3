@@ -49,3 +49,11 @@ model AgentMemoryError {
   @@map("AgentMemoryError")
 }
 // END ANVIA MEMORY PRISMA 8 MODELS
+
+
+model Notes {
+  id String @id @default(uuid())
+  note String
+  createdAt TimestampString @default(now())
+  updatedAt temporal.updatedAtString()
+}

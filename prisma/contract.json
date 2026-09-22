@@ -15,6 +15,10 @@
     "AgentMemorySession": {
       "model": "AgentMemorySession",
       "namespace": "public"
+    },
+    "notes": {
+      "model": "Notes",
+      "namespace": "public"
     }
   },
   "domain": {
@@ -350,6 +354,57 @@
               "namespaceId": "public",
               "table": "AgentMemorySession"
             }
+          },
+          "Notes": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamp-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "note": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "note": {
+                  "column": "note"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "notes"
+            }
           }
         }
       }
@@ -624,6 +679,42 @@
                   ]
                 }
               ]
+            },
+            "notes": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamp-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamp",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "note": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
             }
           }
         },
@@ -631,10 +722,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "d5b3e0e6b3978d0d8d45c98fdf76cd68a45547f2b291b70ea6128d45525110db"
+    "storageHash": "5beaa3730da39bd23403a83fff053b15233722caf304bd652b07f557e575772a"
   },
   "execution": {
-    "executionHash": "89644bf791eb2bb9f1a3cc899a1087c306727166f4110de67a4ae10f05ec3fe2",
+    "executionHash": "46716fc91bc1b2a39f20dd87e07d37c9a89e15b068274b0ab6192570c0e4cf86",
     "mutations": {
       "defaults": [
         {
@@ -668,6 +759,32 @@
             "column": "id",
             "namespace": "public",
             "table": "AgentMemorySession"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "notes"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "notes"
           }
         }
       ]
