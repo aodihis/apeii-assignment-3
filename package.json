@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "contract:emit": "prisma contract emit"
+    "dev": "pnpm tsx ./src/index.ts",
+    "contract:emit": "prisma contract emit",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
